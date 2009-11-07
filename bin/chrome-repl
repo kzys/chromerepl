@@ -1,0 +1,18 @@
+#! /usr/bin/env ruby
+require 'chrome'
+require 'readline'
+
+port = ARGV.shift.to_i
+
+client = Chrome::Client.new('localhost', port)
+puts "Version: %s" % client.server_version
+
+extension = client.extension('dpjcgiopmkipldblejngoglpekmneclg')
+extension.connect do |port|
+  while ln = Readline.readline('> ', true)
+    extension.post(port, ln)
+    h, r = client.read_response
+    data = r['data']
+    p data['success'] || data['error']
+  end
+end
