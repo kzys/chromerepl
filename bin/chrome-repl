@@ -2,12 +2,14 @@
 require 'chrome'
 require 'readline'
 
+EXTENSION_ID = 'olppoehbaphcegdobmaipllacoammngl'
+
 port = ARGV.shift.to_i
 
 client = Chrome::Client.new('localhost', port)
 puts "Version: %s" % client.server_version
 
-extension = client.extension('dpjcgiopmkipldblejngoglpekmneclg')
+extension = client.extension(EXTENSION_ID)
 extension.connect do |port|
   while ln = Readline.readline('> ', true)
     extension.post(port, ln)
