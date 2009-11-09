@@ -1,6 +1,17 @@
 #! /usr/bin/env ruby
 require 'chrome'
 require 'readline'
+require 'pp'
+
+def print_response(data)
+  if data.empty?
+    puts 'nil'
+  elsif data['error']
+    puts data['error']['stack']
+  elsif data['success']
+    pp data['success']
+  end
+end
 
 EXTENSION_ID = 'olppoehbaphcegdobmaipllacoammngl'
 
@@ -14,7 +25,6 @@ extension.connect do |port|
   while ln = Readline.readline('> ', true)
     extension.post(port, ln)
     h, r = client.read_response
-    data = r['data']
-    p data['success'] || data['error']
+    print_response(r['data'])
   end
 end
