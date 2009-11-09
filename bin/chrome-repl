@@ -10,10 +10,12 @@ def print_response(data)
     puts data['error']['stack']
   elsif data['success']
     pp data['success']
+  elsif data['log']
+    puts data['log']
   end
 end
 
-EXTENSION_ID = 'olppoehbaphcegdobmaipllacoammngl'
+EXTENSION_ID = 'bpijokngpjkacdohhbajeedhlbdhiccb' # 'olppoehbaphcegdobmaipllacoammngl'
 
 port = ARGV.shift.to_i
 
@@ -24,7 +26,8 @@ extension = client.extension(EXTENSION_ID)
 extension.connect do |port|
   while ln = Readline.readline('> ', true)
     extension.post(port, ln)
-    h, r = client.read_response
-    print_response(r['data'])
+    client.read_all_response.each do |header, resp|
+      print_response(resp['data'])
+    end
   end
 end

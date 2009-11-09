@@ -29,6 +29,16 @@ module Chrome
       @socket.write(str)
     end
 
+    def read_all_response
+      result = []
+
+      while IO.select([ @socket ], [], [], 0.1)
+        result << read_response
+      end
+
+      result
+    end
+
     def read_response
       header = {}
 
