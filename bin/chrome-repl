@@ -2,6 +2,7 @@
 require 'chrome'
 require 'readline'
 require 'pp'
+require 'optparse'
 
 def print_response(data)
   if data.empty?
@@ -15,19 +16,44 @@ def print_response(data)
   end
 end
 
-EXTENSION_ID = 'bpijokngpjkacdohhbajeedhlbdhiccb' # 'olppoehbaphcegdobmaipllacoammngl'
+def print_all_response(client)
+  client.read_all_response.each do |header, resp|
+    print_response(resp['data'])
+  end
+end
 
-port = ARGV.shift.to_i
+extension_id = 'olppoehbaphcegdobmaipllacoammngl'
+port = 9222
+script = nil
+
+parser = OptionParser.new
+
+parser.on('--port N', Integer) do |n|
+  port = n
+end
+
+parser.on('--extension ID') do |s|
+  extension_id = s
+end
+
+parser.on('-e SCRIPT') do |s|
+  script = s
+end
+
+parser.parse!(ARGV)
 
 client = Chrome::Client.new('localhost', port)
-puts "Version: %s" % client.server_version
+extension = client.extension(extension_id)
 
-extension = client.extension(EXTENSION_ID)
 extension.connect do |port|
-  while ln = Readline.readline('> ', true)
-    extension.post(port, ln)
-    client.read_all_response.each do |header, resp|
-      print_response(resp['data'])
+  if script
+    extension.post(port, script)
+    print_all_response(client)
+  else
+    puts "Version: %s" % client.server_version
+    while ln = Readline.readline('> ', true)
+      extension.post(port, ln)
+      print_all_response(client)
     end
   end
 end
