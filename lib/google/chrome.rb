@@ -1,3 +1,6 @@
+# Author:: KATO Kazuyoshi
+# License:: X11 License
+
 require 'socket'
 require 'json'
 
