@@ -4,21 +4,25 @@ require 'readline'
 require 'pp'
 require 'optparse'
 
-def print_response(data)
-  if data.empty?
-    puts 'nil'
-  elsif data['error']
+def print_log_and_error(data)
+  if data['error']
     puts data['error']['stack']
-  elsif data['success']
-    pp data['success']
   elsif data['log']
-    puts data['log']
+    if data['log'].kind_of?(String)
+      puts data['log']
+    else
+      pp data['log']
+    end
   end
 end
 
-def print_all_response(client)
-  client.read_all_response.each do |header, resp|
-    print_response(resp['data'])
+def print_response(data)
+  if data.empty?
+    puts 'nil'
+  elsif data['success']
+    pp data['success']
+  else
+    print_log_and_error(data)
   end
 end
 
@@ -48,12 +52,16 @@ extension = client.extension(extension_id)
 extension.connect do |port|
   if script
     extension.post(port, script)
-    print_all_response(client)
+    client.read_all_response.each do |header, resp|
+      print_log_and_error(resp['data'])
+    end
   else
     puts "Version: %s" % client.server_version
     while ln = Readline.readline('> ', true)
       extension.post(port, ln)
-      print_all_response(client)
+      client.read_all_response.each do |header, resp|
+        print_response(resp['data'])
+      end
     end
   end
 end
