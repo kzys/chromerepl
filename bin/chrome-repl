@@ -1,5 +1,5 @@
 #! /usr/bin/env ruby
-require 'chrome'
+require 'google/chrome'
 require 'readline'
 require 'pp'
 require 'optparse'
@@ -46,7 +46,7 @@ end
 
 parser.parse!(ARGV)
 
-client = Chrome::Client.new('localhost', port)
+client = Google::Chrome::Client.new('localhost', port)
 extension = client.extension(extension_id)
 
 extension.connect do |port|
@@ -56,7 +56,7 @@ extension.connect do |port|
       print_log_and_error(resp['data'])
     end
   else
-    puts "Version: %s" % client.server_version
+    puts "Protocol version: %s" % client.server_version
     while ln = Readline.readline('> ', true)
       extension.post(port, ln)
       client.read_all_response.each do |header, resp|
