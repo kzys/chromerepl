@@ -1,10 +1,11 @@
 chrome = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
 private_key = ../chrome-repl.pem
+files = ruby/google-chrome-client-0.1.gem chrome-repl.crx
 
-all: ruby/google-chrome-0.1.gem chrome-repl.crx
+all: $(files)
 
-ruby/google-chrome-0.1.gem:
-	cd ruby && gem build google-chrome.gemspec
+ruby/google-chrome-client-0.1.gem:
+	cd ruby && gem build google-chrome-client.gemspec
 
 chrome-repl.crx:
 	$(chrome) --pack-extension=extension --pack-extension-key=$(private_key)
@@ -13,5 +14,4 @@ chrome-repl.crx:
 clean:
 	-rm *~
 	-rm */*~
-	-rm chrome-repl.crx
-	-rm ruby/google-chrome-0.1.gem
+	-rm $(files)
