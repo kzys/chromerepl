@@ -1,5 +1,11 @@
+#
+# = google/chrome/client.rb
+#
+# "Google Chrome Developer Tools Procotol" client library.
+#
 # Author:: KATO Kazuyoshi
 # License:: X11 License
+#
 
 require 'socket'
 require 'json'
@@ -7,11 +13,17 @@ require 'json'
 module Google
   module Chrome
     class Client
+      #
+      # Create a Client object and establish the debugger connection.
+      #
       def initialize(host, port)
         @socket = TCPSocket.open(host, port)
         handshake
       end
 
+      #
+      # Read all responses from the server.
+      #
       def read_all_response
         result = []
 
@@ -22,6 +34,9 @@ module Google
         result
       end
 
+      #
+      # Read one response from the server.
+      #
       def read_response
         header = {}
 
@@ -40,6 +55,9 @@ module Google
         return header, body
       end
 
+      #
+      # Send a request.
+      #
       def request(header, body)
         write_request(header, body)
         return read_response
