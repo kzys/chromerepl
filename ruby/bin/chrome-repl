@@ -1,5 +1,5 @@
 #! /usr/bin/env ruby
-require 'google/chrome'
+require 'google/chrome/client'
 require 'readline'
 require 'pp'
 require 'optparse'
