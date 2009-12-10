@@ -1,9 +1,13 @@
 {
   "name": "ChromeRepl",
+  "description": "A remote read-eval-print-loop for Chrome.",
   "version": "0.1",
   "background_page": "background.html",
   "permissions": [
     "tabs", "bookmarks",
     "http://*/", "https://*/"
-  ]
+  ],
+  "icons": {
+    "48": "icon48.png"
+  }
 }
