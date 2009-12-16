@@ -12,12 +12,19 @@ require 'json'
 
 module Google
   module Chrome
+    class HandshakeError < StandardError; end
+
     class Client
+
       #
       # Create a Client object and establish the debugger connection.
       #
-      def initialize(host, port)
-        @socket = TCPSocket.open(host, port)
+      def self.open(host, port)
+        self.new(TCPSocket.open(host, port))
+      end
+
+      def initialize(socket)
+        @socket = socket
         handshake
       end
 
@@ -83,12 +90,14 @@ module Google
 
       private
       def handshake
-        str = "ChromeDevToolsHandshake\r\n"
-        @socket.write(str)
-        if @socket.gets == str
+        greeting = "ChromeDevToolsHandshake\r\n"
+        @socket.write(greeting)
+
+        s = @socket.gets
+        if s == greeting
           ;
         else
-          raise
+          raise HandshakeError, s
         end
       end
 

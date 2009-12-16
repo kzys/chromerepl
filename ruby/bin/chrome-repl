@@ -46,7 +46,7 @@ end
 
 parser.parse!(ARGV)
 
-client = Google::Chrome::Client.new('localhost', port)
+client = Google::Chrome::Client.open('localhost', port)
 extension = client.extension(extension_id)
 
 extension.connect do |port|
