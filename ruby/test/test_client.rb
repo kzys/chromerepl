@@ -3,8 +3,8 @@ require 'google/chrome/client'
 require 'stringio'
 
 class FakeIO
-  def initialize(str = '')
-    @io = StringIO.new(str, 'r')
+  def initialize(*args)
+    @io = StringIO.new(args.join(''), 'r')
   end
 
   def write(s)
@@ -31,10 +31,10 @@ class ClientTest < Test::Unit::TestCase
   end
 
   def test_request
-    io = FakeIO.new([ "ChromeDevToolsHandshake\r\n",
-                      "Content-Length:2\r\n",
-                      "\r\n",
-                      "{}" ].join(''))
+    io = FakeIO.new("ChromeDevToolsHandshake\r\n",
+                    "Content-Length:2\r\n",
+                    "\r\n",
+                    "{}")
     client = Google::Chrome::Client.new(io)
     header, resp = client.request({}, {})
     assert_equal(header, { 'Content-Length' => '2' })
