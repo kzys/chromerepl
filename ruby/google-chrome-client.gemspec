@@ -6,7 +6,7 @@ Gem::Specification.new do |spec|
   spec.summary = 'Ruby client of Google Chrome Developer Tools Protocol'
   spec.author = 'KATO Kazuyoshi'
   spec.email = 'kzys@8-p.info'
-  spec.homepage = 'http://8-p.info/chrome-repl/'
+  spec.homepage = 'http://bitbucket.org/kzys/chrome-repl/'
   spec.add_dependency('json')
 
   spec.has_rdoc = true
