@@ -26,7 +26,9 @@ def print_response(data)
   end
 end
 
-extension_id = 'olppoehbaphcegdobmaipllacoammngl'
+GALLERY_EXTENSION_ID = 'dedppbpeendknnpchklgpdiiiodajgki'
+
+extension_id = GALLERY_EXTENSION_ID
 port = 9222
 script = nil
 
