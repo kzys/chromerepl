@@ -26,20 +26,22 @@ module Google
         end
       end
 
-      def run(client, extension, script)
+      def eval_string(client, extension, script)
         extension.connect do |port|
-          if script
-            extension.post(port, script)
+          extension.post(port, script)
+          client.read_all_response.each do |header, resp|
+            print_log_and_error(resp['data'])
+          end
+        end
+      end
+
+      def interactive(client, extension)
+        extension.connect do |port|
+          puts "Protocol version: %s" % client.server_version
+          while ln = Readline.readline('> ', true)
+            extension.post(port, ln)
             client.read_all_response.each do |header, resp|
-              print_log_and_error(resp['data'])
-            end
-          else
-            puts "Protocol version: %s" % client.server_version
-            while ln = Readline.readline('> ', true)
-              extension.post(port, ln)
-              client.read_all_response.each do |header, resp|
-                print_response(resp['data'])
-              end
+              print_response(resp['data'])
             end
           end
         end
