@@ -1,9 +1,6 @@
 #! /usr/bin/env ruby
-require 'google/chrome/client'
 require 'google/chrome/repl'
 require 'optparse'
-
-app = Google::Chrome::REPL.new
 
 GALLERY_EXTENSION_ID = 'dedppbpeendknnpchklgpdiiiodajgki'
 
@@ -27,13 +24,12 @@ end
 
 parser.parse!(ARGV)
 
-client = Google::Chrome::Client.open('localhost', port)
-extension = client.extension(extension_id)
+app = Google::Chrome::REPL.new(port, extension_id)
 
 if script
-  app.eval_string(client, extension, script)
+  app.eval_string(script)
 elsif not ARGV.empty?
-  app.eval_file(client, extension, ARGV[0])
+  app.eval_file(ARGV[0])
 else
-  app.interactive(client, extension)
+  app.interactive
 end

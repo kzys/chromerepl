@@ -4,6 +4,16 @@ require 'pp'
 module Google
   module Chrome
     class REPL
+      def create_client(port)
+        Google::Chrome::Client.open('localhost', port)
+      end
+
+      def initialize(port, extension_id)
+        @client = create_client(port)
+        @extension = @client.extension(extension_id)
+      end
+
+
       def print_log_and_error(data)
         if data['error']
           puts data['error']['stack']
@@ -26,27 +36,27 @@ module Google
         end
       end
 
-      def eval_string(client, extension, script)
-        extension.connect do |port|
-          extension.post(port, script)
-          client.read_all_response.each do |header, resp|
+      def eval_string(script)
+        @extension.connect do |port|
+          @extension.post(port, script)
+          @client.read_all_response.each do |header, resp|
             print_log_and_error(resp['data'])
           end
         end
       end
 
-      def eval_file(client, extension, path)
+      def eval_file(path)
         open(path) do |f|
-          eval_string(client, extension, f.read)
+          eval_string(f.read)
         end
       end
 
-      def interactive(client, extension)
-        extension.connect do |port|
-          puts "Protocol version: %s" % client.server_version
+      def interactive
+        @extension.connect do |port|
+          puts "Protocol version: %s" % @client.server_version
           while ln = Readline.readline('> ', true)
-            extension.post(port, ln)
-            client.read_all_response.each do |header, resp|
+            @extension.post(port, ln)
+            @client.read_all_response.each do |header, resp|
               print_response(resp['data'])
             end
           end
