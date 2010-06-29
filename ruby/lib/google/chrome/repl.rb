@@ -1,3 +1,4 @@
+require 'google/chrome/client'
 require 'readline'
 require 'pp'
 
@@ -36,18 +37,20 @@ module Google
         end
       end
 
-      def eval_string(script)
+      def eval_string(script, argv)
+        s = "(function () { #{script}; }).apply(null, #{argv.to_json})"
+
         @extension.connect do |port|
-          @extension.post(port, script)
+          @extension.post(port, s)
           @client.read_all_response.each do |header, resp|
             print_log_and_error(resp['data'])
           end
         end
       end
 
-      def eval_file(path)
+      def eval_file(path, argv)
         open(path) do |f|
-          eval_string(f.read)
+          eval_string(f.read, argv)
         end
       end
 

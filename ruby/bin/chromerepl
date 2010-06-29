@@ -27,9 +27,9 @@ parser.parse!(ARGV)
 app = Google::Chrome::REPL.new(port, extension_id)
 
 if script
-  app.eval_string(script)
+  app.eval_string(script, ARGV)
 elsif not ARGV.empty?
-  app.eval_file(ARGV[0])
+  app.eval_file(ARGV[0], ARGV[1..-1])
 else
   app.interactive
 end
