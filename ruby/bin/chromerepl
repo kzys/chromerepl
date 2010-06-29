@@ -32,6 +32,8 @@ extension = client.extension(extension_id)
 
 if script
   app.eval_string(client, extension, script)
+elsif not ARGV.empty?
+  app.eval_file(client, extension, ARGV[0])
 else
   app.interactive(client, extension)
 end

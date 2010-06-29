@@ -35,6 +35,12 @@ module Google
         end
       end
 
+      def eval_file(client, extension, path)
+        open(path) do |f|
+          eval_string(client, extension, f.read)
+        end
+      end
+
       def interactive(client, extension)
         extension.connect do |port|
           puts "Protocol version: %s" % client.server_version
