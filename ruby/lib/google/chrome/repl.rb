@@ -54,6 +54,19 @@ module Google
         end
       end
 
+      def post(port, ln)
+        @extension.post(port, ln)
+        @client.read_all_response.map do |header, resp|
+          resp['data']
+        end
+      end
+
+      def session(&block)
+        @extension.connect do |port|
+          block.call(port)
+        end
+      end
+
       def interactive
         @extension.connect do |port|
           puts "Protocol version: %s" % @client.server_version
