@@ -27,7 +27,7 @@ class ClientTest < Test::Unit::TestCase
     end
 
     io = FakeIO.new("ChromeDevToolsHandshake\r\n")
-    assert_kind_of(Google::Chrome::Client.new(io), Google::Chrome::Client)
+   assert_kind_of(Google::Chrome::Client, Google::Chrome::Client.new(io))
   end
 
   def test_request

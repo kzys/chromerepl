@@ -41,7 +41,7 @@ end
 class REPLTest < Test::Unit::TestCase
   def test_new
     app = TestableREPL.new(nil, nil)
-    assert_kind_of(app, Google::Chrome::REPL)
+    assert_kind_of(Google::Chrome::REPL, app)
   end
 
   def test_eval_string
