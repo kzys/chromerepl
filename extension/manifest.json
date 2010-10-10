@@ -1,7 +1,7 @@
 {
   "name": "ChromeRepl",
   "description": "A remote read-eval-print-loop for Chrome.",
-  "version": "0.1",
+  "version": "0.2",
   "background_page": "background.html",
   "permissions": [
     "http://*/", "https://*/"
