@@ -6,7 +6,7 @@
   "permissions": [
     "http://*/", "https://*/",
     "bookmarks", "chrome://favicon/", "contextMenus", "cookies",
-    "experimental", "geolocation", "history", "idle", "notifications",
+    "geolocation", "history", "idle", "notifications",
     "tabs", "unlimitedStorage"
   ],
   "icons": {
