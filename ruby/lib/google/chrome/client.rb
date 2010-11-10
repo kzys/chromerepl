@@ -173,6 +173,10 @@ module Google
 
         return resp
       end
+
+      def scripts
+        debugger_command('scripts')['data']['body']
+      end
     end
 
     class ExtensionPorts

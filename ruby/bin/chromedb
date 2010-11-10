@@ -1,0 +1,16 @@
+#! /usr/bin/env ruby
+require 'google/chrome/debugger'
+require 'optparse'
+
+port = 9222
+
+parser = OptionParser.new
+
+parser.on('--port N', Integer) do |n|
+  port = n
+end
+
+parser.parse!(ARGV)
+
+app = Google::Chrome::Debugger.new(port)
+app.interactive
