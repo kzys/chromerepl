@@ -80,7 +80,7 @@ module Google
         header, resp = request({ 'Tool' => 'DevToolsService' },
                                { 'command' => 'list_tabs' })
         resp['data'].map do |ary|
-          Tab.new(self, ary[0].to_i)
+          Tab.new(self, ary[0].to_i, ary[1])
         end
       end
 
@@ -88,7 +88,6 @@ module Google
         ExtensionPorts.new(self, id)
       end
 
-      private
       def handshake
         greeting = "ChromeDevToolsHandshake\r\n"
         @socket.write(greeting)
@@ -116,14 +115,33 @@ module Google
     class Tab
       @@seq = 1
 
-      def initialize(client, number)
+      def initialize(client, number, uri)
         @client = client
         @number = number
+        @uri = uri
       end
+      attr_reader :number, :uri
 
       def request(body)
-        @client.request({ 'Tool' => 'V8Debugger', 'Destination' => @number },
-                        body)
+        @client.write_request({ 'Tool' => 'V8Debugger',
+                                'Destination' => @number },
+                              body)
+        @client.write_request({ 'Tool' => 'V8Debugger',
+                                'Destination' => @number },
+                              { 'command' => 'evaluate_javascript',
+                                'data' => 'javascript:void(0);' })
+        loop do
+          h, resp = @client.read_response
+          if resp['command'] == 'debugger_command'
+            if resp['data']['type'] == 'response'
+              return resp
+            else
+              ;
+            end
+          else
+            return resp
+          end
+        end
       end
 
       def attach
@@ -138,11 +156,11 @@ module Google
       end
 
       def detach
-        request({ 'command' => 'attach' })
+        request({ 'command' => 'detach' })
       end
 
-      def debugger_command(command, arguments)
-        h, r = request({
+      def debugger_command(command, arguments = {})
+        resp = request({
                          'command' => 'debugger_command',
                          'data' => {
                            'seq' => @@seq,
@@ -153,7 +171,7 @@ module Google
                        })
         @@seq += 1
 
-        return h, r
+        return resp
       end
     end
 
