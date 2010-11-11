@@ -130,14 +130,23 @@ module Google
                                 'Destination' => @number },
                               { 'command' => 'evaluate_javascript',
                                 'data' => 'javascript:void(0);' })
+
+        wait do |resp|
+          if resp['data']['type'] == 'response'
+            true
+          elsif resp['data']['event'] == 'afterCompile'
+            false
+          else
+            false
+          end
+        end
+      end
+
+      def wait(&block)
         loop do
           h, resp = @client.read_response
           if resp['command'] == 'debugger_command'
-            if resp['data']['type'] == 'response'
-              return resp
-            else
-              ;
-            end
+            return resp if block.call(resp)
           else
             return resp
           end

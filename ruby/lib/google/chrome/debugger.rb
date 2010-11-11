@@ -68,6 +68,12 @@ module Google
             else
               puts 'Failed to find a script.'
             end
+          when 'continue'
+            tab.debugger_command('continue')
+            tab.wait do |resp|
+              pp resp
+              false
+            end
           else
             pp tab.debugger_command(ln)
           end
