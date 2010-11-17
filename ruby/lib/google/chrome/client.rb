@@ -13,6 +13,7 @@ require 'json'
 module Google
   module Chrome
     class HandshakeError < StandardError; end
+    class ConnectionError < StandardError; end
 
     class Client
 
@@ -198,6 +199,11 @@ module Google
         h, r = @client.request({ 'Tool' => 'ExtensionPorts' },
                                { 'command' => 'connect',
                                  'data' => { 'extensionId' => @id } })
+        if r['command'] == 'onDisconnect'
+          @client.read_response
+          raise ConnectionError
+        end
+
         port = r['data']['portId'].to_i
 
         if block_given?

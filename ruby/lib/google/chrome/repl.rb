@@ -67,15 +67,44 @@ module Google
         end
       end
 
-      def interactive
-        @extension.connect do |port|
-          puts "Protocol version: %s" % @client.server_version
-          while ln = Readline.readline('> ', true)
-            @extension.post(port, ln)
-            @client.read_all_response.each do |header, resp|
-              print_response(resp['data'])
-            end
+      def interactive_with_extension(port)
+        while ln = Readline.readline('> ', true)
+          @extension.post(port, ln)
+          @client.read_all_response.each do |header, resp|
+            print_response(resp['data'])
           end
+        end
+        @extension.disconnect(port)
+      end
+
+      def interactive_without_extension
+        puts 'Failed to connect ChromeRepl extension.'
+
+        tab = nil
+        if @client.tabs.length == 1
+          tab = @client.tabs[0]
+          tab.attach
+        end
+
+        while ln = Readline.readline('> ', true)
+          resp = tab.debugger_command('evaluate',
+                                      { 'expression' => ln, 'global' => true })
+          if resp['data']['command'] == 'evaluate'
+            pp resp['data']['body']['value']
+          end
+        end
+        tab.detach
+      end
+
+      def interactive
+        puts "Protocol version: %s" % @client.server_version
+
+        port = nil
+        begin
+          port = @extension.connect
+          interactive_with_extension(port)
+        rescue ConnectionError
+          interactive_without_extension
         end
       end
     end
