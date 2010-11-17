@@ -77,14 +77,8 @@ module Google
         @extension.disconnect(port)
       end
 
-      def interactive_without_extension
-        puts 'Failed to connect ChromeRepl extension.'
-
-        tab = nil
-        if @client.tabs.length == 1
-          tab = @client.tabs[0]
-          tab.attach
-        end
+      def interactive_with_tab(tab)
+        tab.attach
 
         while ln = Readline.readline('> ', true)
           resp = tab.debugger_command('evaluate',
@@ -93,18 +87,39 @@ module Google
             pp resp['data']['body']['value']
           end
         end
+
         tab.detach
       end
 
-      def interactive
+      def interactive(attach)
         puts "Protocol version: %s" % @client.server_version
 
-        port = nil
-        begin
-          port = @extension.connect
-          interactive_with_extension(port)
-        rescue ConnectionError
-          interactive_without_extension
+        tab = nil
+
+        if attach
+          tab = @client.tabs.find do |t|
+            t.number == attach
+          end
+
+          if tab
+            interactive_with_tab(tab)
+          else
+            $stderr.puts("Failed to attach tab (number = #{attach}).")
+          end
+        else
+          port = nil
+          begin
+            port = @extension.connect
+            interactive_with_extension(port)
+          rescue ConnectionError
+            $stderr.puts('Failed to connect ChromeRepl extension.')
+          end
+        end
+      end
+
+      def print_tabs
+        @client.tabs.each do |t|
+          printf("%2d %s\n", t.number, t.uri)
         end
       end
     end

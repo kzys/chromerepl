@@ -7,6 +7,8 @@ GALLERY_EXTENSION_ID = 'dedppbpeendknnpchklgpdiiiodajgki'
 extension_id = GALLERY_EXTENSION_ID
 port = 9222
 script = nil
+tabs = nil
+attach = nil
 
 parser = OptionParser.new
 
@@ -22,14 +24,24 @@ parser.on('-e SCRIPT') do |s|
   script = s
 end
 
+parser.on('--tabs') do |s|
+  tabs = true
+end
+
+parser.on('--attach N', Integer) do |n|
+  attach = n
+end
+
 parser.parse!(ARGV)
 
 app = Google::Chrome::REPL.new(port, extension_id)
 
-if script
+if tabs
+  app.print_tabs
+elsif script
   app.eval_string(script, ARGV)
 elsif not ARGV.empty?
   app.eval_file(ARGV[0], ARGV[1..-1])
 else
-  app.interactive
+  app.interactive(attach)
 end
