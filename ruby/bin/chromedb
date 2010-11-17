@@ -1,6 +1,9 @@
 #! /usr/bin/env ruby
-require 'google/chrome/debugger'
+require 'pathname'
 require 'optparse'
+
+$LOAD_PATH << (Pathname.new(__FILE__).dirname + '../lib').expand_path
+require 'google/chrome/debugger'
 
 port = 9222
 
